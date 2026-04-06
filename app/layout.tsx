@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'reposhoot - GitHub Repo to Beautiful Image',
   description: 'Transform GitHub repositories into beautiful shareable images for social media',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({
