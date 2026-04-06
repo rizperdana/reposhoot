@@ -1,7 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
 
 interface RepoInputProps {
   onSubmit: (owner: string, repo: string) => void
@@ -9,49 +7,34 @@ interface RepoInputProps {
 
 export function RepoInput({ onSubmit }: RepoInputProps) {
   const [value, setValue] = useState('')
-  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    
-    let owner = ''
-    let repo = ''
-    
-    if (value.includes('github.com')) {
-      const regex = /github\.com[/:]([^/]+)\/([^/]+)/
-      const match = value.match(regex)
-      if (match) {
-        owner = match[1]
-        repo = match[2].replace('.git', '')
-      }
-    } else if (value.includes('/')) {
-      const parts = value.split('/')
-      owner = parts[0]
-      repo = parts[1]
+    const v = value.trim()
+    if (!v) return
+    if (v.includes('/')) {
+      const [o, r] = v.split('/')
+      onSubmit(o.trim(), r.trim())
     } else {
-      owner = value
-      repo = ''
+      onSubmit(v, '')
     }
-    
-    if (owner && repo) {
-      onSubmit(owner, repo)
-    }
-    setLoading(false)
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
-      <Input
+      <input
         type="text"
-        placeholder="owner/repo or GitHub URL"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className="flex-1"
+        onChange={e => setValue(e.target.value)}
+        placeholder="owner/repo"
+        className="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-colors"
       />
-      <Button type="submit" disabled={loading}>
-        {loading ? 'Loading...' : 'Go'}
-      </Button>
+      <button
+        type="submit"
+        className="px-5 py-3 rounded-lg bg-green-500 hover:bg-green-400 text-black font-medium transition-colors"
+      >
+        Generate
+      </button>
     </form>
   )
 }
