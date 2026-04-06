@@ -6,7 +6,7 @@ import { PreviewCanvas } from '@/components/preview-canvas'
 import { ExportButtons } from '@/components/export-buttons'
 import { Footer } from '@/components/footer'
 import { TemplateId, RenderData } from '@/lib/templates'
-import { getRepoInfo, getContributors, getLatestRelease, getLanguages } from '@/lib/github'
+import { getRepoInfo, getContributors, getLatestRelease, getLanguages, getReadme } from '@/lib/github'
 
 export default function Home() {
   const [owner, setOwner] = useState('')
@@ -39,11 +39,12 @@ export default function Home() {
     setError('')
     
     try {
-      const [repoInfo, contributors, release, languages] = await Promise.all([
+      const [repoInfo, contributors, release, languages, readme] = await Promise.all([
         getRepoInfo(o, r),
         getContributors(o, r),
         getLatestRelease(o, r),
         getLanguages(o, r),
+        getReadme(o, r),
       ])
       
       setData({
@@ -51,7 +52,7 @@ export default function Home() {
         contributors,
         release,
         languages,
-        readme: '',
+        readme,
       })
       
       // Save to cookie
@@ -64,35 +65,38 @@ export default function Home() {
   }
 
   return (
-    <main className="max-w-4xl mx-auto p-8">
+    <main className="min-h-screen p-4 md:p-8">
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">reposhoot</h1>
+        <h1 className="text-2xl font-bold animate-fade-in" style={{color:'#fff'}}>reposhoot</h1>
         <a 
           href="https://github.com/rizperdana/reposhoot" 
           target="_blank"
           className="text-sm hover:underline"
+          style={{color:'#6c7086'}}
         >
           GitHub
         </a>
       </header>
       
-      <RepoInput onSubmit={handleSubmit} />
+      <div className="animate-slide-up delay-100">
+        <RepoInput onSubmit={handleSubmit} />
+      </div>
       
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {error && <p className="text-red-400 mt-4">{error}</p>}
       
-      <div className="mt-6">
+      <div className="mt-6 animate-slide-up delay-200">
         <TemplateSelector 
           selected={templateId} 
           onChange={setTemplateId} 
         />
       </div>
       
-      <div className="mt-6" ref={previewRef}>
-        <PreviewCanvas templateId={templateId} data={data} />
+      <div className="mt-6 animate-slide-up delay-300" ref={previewRef}>
+        <PreviewCanvas templateId={templateId} data={data} loading={loading} />
       </div>
       
       {data && (
-        <div className="mt-6">
+        <div className="mt-6 animate-slide-up delay-400">
           <ExportButtons targetRef={previewRef} />
         </div>
       )}
